@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 import os
 import sys
+import beeline
+
+beeline.init(
+    writekey='1252c1ce92b00ad574131fa6e873366d',
+    dataset='cheems-app',
+    service_name='cheems-app',
+    debug=False, # defaults to False. if True, data doesn't get sent to Honeycomb
+)
+
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conduit.settings")
