@@ -21,3 +21,4 @@ steps:
     repo: dhpup/realworld
     auto_tag: true
     auto_tag_suffix: 1.0.12
+
