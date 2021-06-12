@@ -6,8 +6,8 @@ RUN pip install honeycomb-beeline
 RUN pip install -U setuptools
 COPY manage.py /app
 COPY conduit /app
-COPY project-logo.png
+COPY project-logo.png /app
 #RUN mkdir /app/static
 ENTRYPOINT [ "python" ]
-CMD [ "print('Hello world')" ]
-#CMD [ "manage.py" ]
+#CMD [ "print('Hello world')" ]
+CMD [ "manage.py" ]
