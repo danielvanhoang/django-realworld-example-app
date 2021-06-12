@@ -16,3 +16,7 @@ gunicorn
 Flask-Cors
 honeycomb-beeline
 setuptools
+pytest
+WebTest
+factory-boy
+Faker
