@@ -1,6 +1,6 @@
 FROM python:3.8-slim-buster
 ENV CONDUIT_SECRET='something-really-secret'
-ENV FLASK_APP=/autoapp.py
+ENV FLASK_APP=autoapp.py
 ENV FLASK_DEBUG=1
 WORKDIR /app
 COPY requirements.txt requirements.txt
