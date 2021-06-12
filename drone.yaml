@@ -6,11 +6,9 @@ name: default
 steps:
 
 - name: build
-  image: python:3.10.0b1-slim-buster
+  image: python:3.8-slim-buster
   commands:
-    - "pip3 install -r requirements.txt"
-    - "pip install honeycomb-beeline"
-    - "pip install -U setuptools"
+    - "pip install -r requirements.txt"
     - "apt update"
 
 - name: publish
