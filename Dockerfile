@@ -5,7 +5,7 @@ RUN pip3 install -r requirements.txt
 RUN pip install honeycomb-beeline
 RUN pip install -U setuptools
 COPY manage.py /app
-COPY conduit /app/conduit
-RUN mkdir /app/static
+COPY conduit /app
+#RUN mkdir /app/static
 ENTRYPOINT [ "python" ]
 CMD [ "manage.py" ]
