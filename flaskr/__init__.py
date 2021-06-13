@@ -52,7 +52,7 @@ def create_app(test_config=None):
     ##Hook beeline into app???
     honeycomb_write_key = os.environ.get("HONEYCOMB_WRITEKEY")
     beeline.init(writekey=honeycomb_write_key,
-             dataset='blogtest', service_name='blogtest')
+             dataset='blogkubetest', service_name='blogkubetest',debug=True)
     HoneyMiddleware(app, db_events=False)
 
     return app
