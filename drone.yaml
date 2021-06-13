@@ -10,6 +10,7 @@ steps:
   commands:
     - "pip install -r requirements.txt"
     - "pip install --editable ."
+    - "pip install honeycomb-beeline"
     - "apt update"
 
 - name: publish

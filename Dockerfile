@@ -9,6 +9,7 @@ COPY . /app
 WORKDIR /app
 
 RUN pip install --editable .
+RUN pip install honeycomb-beeline
 
 RUN flask init-db
 
