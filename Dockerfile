@@ -1,12 +1,20 @@
-FROM python:3.8-slim-buster
+FROM python:3.8.2-alpine3.11
 ENV CONDUIT_SECRET='something-really-secret'
-ENV FLASK_APP=autoapp.py
-ENV FLASK_DEBUG=1
+ENV FLASK_APP=flaskr
+ENV FLASK_ENV=development
+ENV HONEYCOMB_WRITE_KEY='1252c1ce92b00ad574131fa6e873366d'
+
+COPY . /app
+
 WORKDIR /app
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-COPY . .
-RUN flask db init
-RUN flask db migrate
-RUN flask db upgrade
-CMD [ "flask run --with-threads"]
+
+RUN pip install --editable .
+
+RUN flask init-db
+
+# Unit tests
+# RUN pip install pytest && pytest
+
+EXPOSE 5000
+
+CMD [ "flask", "run", "--host=0.0.0.0" ]

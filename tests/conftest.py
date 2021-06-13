@@ -1,61 +1,62 @@
-# -*- coding: utf-8 -*-
-"""Defines fixtures available to all tests."""
+import os
+import tempfile
 
 import pytest
-from webtest import TestApp
 
-from conduit.app import create_app
-from conduit.database import db as _db
-from conduit.settings import TestConfig
-from conduit.profile.models import UserProfile
+from flaskr import create_app
+from flaskr.db import get_db
+from flaskr.db import init_db
 
-
-from .factories import UserFactory
-
-
-@pytest.yield_fixture(scope='function')
-def app():
-    """An application for the tests."""
-    _app = create_app(TestConfig)
-
-    with _app.app_context():
-        _db.create_all()
-
-    ctx = _app.test_request_context()
-    ctx.push()
-
-    yield _app
-
-    ctx.pop()
-
-
-@pytest.fixture(scope='function')
-def testapp(app):
-    """A Webtest app."""
-    return TestApp(app)
-
-
-@pytest.yield_fixture(scope='function')
-def db(app):
-    """A database for the tests."""
-    _db.app = app
-    with app.app_context():
-        _db.create_all()
-
-    yield _db
-
-    # Explicitly close DB connection
-    _db.session.close()
-    _db.drop_all()
+# read in SQL for populating test data
+with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
+    _data_sql = f.read().decode("utf8")
 
 
 @pytest.fixture
-def user(db):
-    """A user for the tests."""
-    class User():
-        def get(self):
-            muser = UserFactory(password='myprecious')
-            UserProfile(muser).save()
-            db.session.commit()
-            return muser
-    return User()
+def app():
+    """Create and configure a new app instance for each test."""
+    # create a temporary file to isolate the database for each test
+    db_fd, db_path = tempfile.mkstemp()
+    # create the app with common test config
+    app = create_app({"TESTING": True, "DATABASE": db_path})
+
+    # create the database and load test data
+    with app.app_context():
+        init_db()
+        get_db().executescript(_data_sql)
+
+    yield app
+
+    # close and remove the temporary database
+    os.close(db_fd)
+    os.unlink(db_path)
+
+
+@pytest.fixture
+def client(app):
+    """A test client for the app."""
+    return app.test_client()
+
+
+@pytest.fixture
+def runner(app):
+    """A test runner for the app's Click commands."""
+    return app.test_cli_runner()
+
+
+class AuthActions(object):
+    def __init__(self, client):
+        self._client = client
+
+    def login(self, username="test", password="test"):
+        return self._client.post(
+            "/auth/login", data={"username": username, "password": password}
+        )
+
+    def logout(self):
+        return self._client.get("/auth/logout")
+
+
+@pytest.fixture
+def auth(client):
+    return AuthActions(client)
