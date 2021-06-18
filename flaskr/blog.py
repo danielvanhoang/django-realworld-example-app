@@ -57,6 +57,13 @@ def get_post(id, check_author=True):
     return post
 
 
+def main():
+    trace = beeline.start_trace(context={
+        "name": "blog post",
+        "hostname": hostname,
+        # other initial context
+    })
+
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
 def create():
@@ -81,6 +88,17 @@ def create():
             return redirect(url_for("blog.index"))
 
     return render_template("blog/create.html")
+
+    # add some more context
+    beeline.add_context({"user_id": author_id})
+
+    # more application code
+
+    beeline.finish_trace(trace)
+
+    # since our app is shutting down, call close() to flush any remaining
+    # events
+    beeline.close()
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
