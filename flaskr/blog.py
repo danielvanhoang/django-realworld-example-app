@@ -6,9 +6,10 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from werkzeug.exceptions import abort
-
 from flaskr.auth import login_required
 from flaskr.db import get_db
+import beeline
+from beeline.middleware.flask import HoneyMiddleware
 
 bp = Blueprint("blog", __name__)
 
@@ -56,14 +57,6 @@ def get_post(id, check_author=True):
 
     return post
 
-
-def main():
-    trace = beeline.start_trace(context={
-        "name": "blog post",
-        "hostname": hostname,
-        # other initial context
-    })
-
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
 def create():
@@ -84,21 +77,11 @@ def create():
                 "INSERT INTO post (title, body, author_id) VALUES (?, ?, ?)",
                 (title, body, g.user["id"]),
             )
+            beeline.add_field("blog_user", author_id)
             db.commit()
             return redirect(url_for("blog.index"))
 
     return render_template("blog/create.html")
-
-    # add some more context
-    beeline.add_context({"user_id": author_id})
-
-    # more application code
-
-    beeline.finish_trace(trace)
-
-    # since our app is shutting down, call close() to flush any remaining
-    # events
-    beeline.close()
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
