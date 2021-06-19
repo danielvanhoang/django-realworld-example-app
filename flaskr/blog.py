@@ -77,7 +77,6 @@ def create():
                 "INSERT INTO post (title, body, author_id) VALUES (?, ?, ?)",
                 (title, body, g.user["id"]),
             )
-            beeline.add_field("blog_user", id)
             db.commit()
             return redirect(url_for("blog.index"))
 

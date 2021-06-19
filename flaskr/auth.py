@@ -13,6 +13,9 @@ from werkzeug.security import generate_password_hash
 
 from flaskr.db import get_db
 
+import beeline
+from beeline.middleware.flask import HoneyMiddleware
+
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
@@ -34,6 +37,7 @@ def load_logged_in_user():
     """If a user id is stored in the session, load the user object from
     the database into ``g.user``."""
     user_id = session.get("user_id")
+    beeline.add_field("blog_user", user_id)
 
     if user_id is None:
         g.user = None
